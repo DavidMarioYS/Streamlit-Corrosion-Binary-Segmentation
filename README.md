@@ -65,7 +65,7 @@ pip install -r requirements.txt
 ## Running the Application
 
 ```bash
-streamlit run web1.py
+streamlit run app.py
 ```
 
 ### Navigation
