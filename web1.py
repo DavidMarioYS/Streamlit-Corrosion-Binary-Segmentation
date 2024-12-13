@@ -7,11 +7,32 @@ from PIL import Image
 from io import BytesIO
 import os
 import pandas as pd
+import requests
 
 # Pengaturan halaman
 st.set_page_config(page_title="Responsive Dashboard", page_icon=":guardsman:", layout="wide")
 
 # Fungsi fungsi
+# URL file model di Google Drive
+MobileUNet_Asset = "https://drive.google.com/file/id=1uBJF7UyTaGiilIDF3t2z9IU6sMzWfmuR"
+MobileUNet_Corrosion = "https://drive.google.com/file/id=1NFUHzL9PGyGAeN-kVLP_h0jUsKo-Qw06"
+FCN8_Asset = "https://drive.google.com/file/id=1Alr6TDBNQZ4JNjVCM69qhh-FjZ986w1F"
+FCN8_Corrosion = "https://drive.google.com/file/id=1XnvchbaaYAiJp-VysBLEjr7jQx8ptwAP"
+BiSeNetV2_Asset = "https://drive.google.com/file/id=1b2yvRkf3wwXQq1X25L4utfkPDT_0u6dC"
+BiSeNetV2_Corrosion = "https://drive.google.com/file/id=1xuEdMDyY3Xz437FUEFclb90qy2MFvJyx"
+
+@st.cache_data  # Cache untuk menghindari unduhan berulang
+def download_model(url):
+    # Unduh model dari Google Drive
+    response = requests.get(url, stream=True)
+    model_path = f"{model_name}.h5"
+    with open(model_path, "wb") as file:
+        for chunk in response.iter_content(chunk_size=1024):
+            if chunk:
+                file.write(chunk)
+    return model
+    
+
 def display_uploaded_image(uploaded_file):
     if uploaded_file is not None:
         # Membaca gambar
@@ -166,8 +187,10 @@ def model():
     # Konten berdasarkan tab yang dipilih
     if st.session_state.tab1_selected:
         st.write("Mobile U-Net tab is selected.")
-        asset_model = load_keras_model("./model/MobileUNet_128A_B8E10_Asset.keras")
-        corrosion_model = load_keras_model("./model/MobileUNet_128A_B8E10_Corrosion.keras")
+        assetmodel = download_model(MobileUNet_Asset)
+        corrosionmodel = download_model(MobileUNet_Corrosion)
+        asset_model = load_keras_model(assetmodel)
+        corrosion_model = load_keras_model(corrosionmodel)
         
         st.text("Pilih Proses Segmentasi...")
         
@@ -253,8 +276,11 @@ def model():
 
     elif st.session_state.tab2_selected:
         st.write("FCN8 tab is selected.")
-        asset_model = load_keras_model("./model/FCN8_128A_B8E10_Asset.keras")
-        corrosion_model = load_keras_model("./model/FCN8_128A_B8E10_Corrosion.keras")
+        st.write("Mobile U-Net tab is selected.")
+        assetmodel = download_model(FCN8_Asset)
+        corrosionmodel = download_model(FCN8_Corrosion)
+        asset_model = load_keras_model(assetmodel)
+        corrosion_model = load_keras_model(corrosionmodel)
         
         st.text("Pilih Proses Segmentasi...")
         
@@ -340,8 +366,11 @@ def model():
 
     elif st.session_state.tab3_selected:
         st.write("BiSeNetV2 tab is selected.")
-        asset_model = load_keras_model("./model/BiSeNetV2_128A_B8E10_Asset.keras")
-        corrosion_model = load_keras_model("./model/BiSeNetV2_128A_B8E10_Corrosion.keras")
+        st.write("Mobile U-Net tab is selected.")
+        assetmodel = download_model(BiSeNetV2_Asset)
+        corrosionmodel = download_model(BiSeNetV2_Corrosion)
+        asset_model = load_keras_model(assetmodel)
+        corrosion_model = load_keras_model(corrosionmodel)
         
         st.text("Pilih Proses Segmentasi...")
         
